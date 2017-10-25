@@ -20,9 +20,6 @@ class Snatch3r(object):
     """Commands for the Snatch3r robot that might be useful in many different programs."""
 
     def drive_inches(self,distance,speed):
-        print("--------------------------------------------")
-        print("  Drive using input")
-        print("--------------------------------------------")
         ev3.Sound.speak("Drive using encoders").wait()
 
         # Connect two large motors on output ports B and C
