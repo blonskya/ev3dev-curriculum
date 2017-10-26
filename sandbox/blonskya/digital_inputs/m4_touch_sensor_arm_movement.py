@@ -3,15 +3,15 @@
 In this module you will use the touch sensor to make arm movements.  Instead of writing code from scratch you will
 fix the existing code, which is FULL of bugs.
 
-Authors: David Fisher and PUT_YOUR_NAME_HERE.
-"""  # TODO: 1. PUT YOUR NAME IN THE ABOVE LINE.
+Authors: David Fisher and Andrew Blonsky.
+"""  # Done: 1. PUT YOUR NAME IN THE ABOVE LINE.
 
 import ev3dev.ev3 as ev3
 import time
 
 MAX_SPEED = 900
 
-# TODO: 2. Have someone on your team run this program as is on the EV3 and make sure everyone understands the code.
+# Done: 2. Have someone on your team run this program as is on the EV3 and make sure everyone understands the code.
 # Can you see what the robot does and explain what each line of code is doing? Talk as a group to make sure.
 
 
@@ -74,7 +74,7 @@ def arm_calibration(arm_motor, touch_sensor):
 
     # Code that attempts to do this task but has MANY bugs (nearly 1 on every line).  Fix them!
     arm_motor.run_forever(speed_sp=100)
-    while not touch_sensor:
+    while not touch_sensor.is_pressed:
         time.sleep(0.01)
     arm_motor.stop(stop_action="coast")
 
