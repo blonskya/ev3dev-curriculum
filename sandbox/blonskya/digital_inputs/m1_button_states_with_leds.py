@@ -73,12 +73,12 @@ def main():
     def handle_down_button(state, colors, rept):
         if state:
             print("down")
-            toshow = colors[n[len(n)-1]]
-            ev3.Leds.set_color(ev3.Leds.LEFT, ev3.Leds.toshow)
-            ev3.Leds.set_color(ev3.Leds.Right, ev3.Leds.toshow)
+            toshow = colors[rept[len(rept)-1]%len(colors)]
+            ev3.Leds.set_color(ev3.Leds.LEFT, toshow)
+            ev3.Leds.set_color(ev3.Leds.RIGHT, toshow)
             rept.append(rept[len(rept)-1]+1)
 
-    n=[0]
+    n=[1]
     btn.on_up = handle_up_button
     btn.on_left = handle_left_button
     btn.on_right = handle_right_button
