@@ -73,18 +73,8 @@ main()
 #   Beep after the turn is complete via a beep in this module (tests to make sure the library is blocking)
 #   When the library method is complete have all team members VCS update and test using their own m4_turn_degrees.py
 
-""" degrees_to_turn = 1
-    while degrees_to_turn != 0:
-        speed = int(input("Enter a speed (0 to 900 dps): "))
-        degrees_to_turn = int(input("Enter a degree turn: "))
-        ev3.Snatch3r().turn_degrees(degrees_to_turn, speed)
-        ev3.Sound.beep().wait()
 
-    print("Goodbye!")
-    ev3.Sound.speak("Goodbye").wait()"""
-
-
-# TODO: 5. Formally test your work. When you think you have the problem complete run these tests:
+# DONE: 5. Formally test your work. When you think you have the problem complete run these tests:
 #     45 degrees turns left 45 degrees
 #    -45 degrees turn right 45 degrees putting you back where you started
 #     90 degrees turns left 90 degrees
@@ -95,6 +85,6 @@ main()
 # Add more tests as you see fit.  Ideally you should be within 45 degrees of back where you started (if you can).
 
 
-# TODO: 6. Call over a TA or instructor to sign your team's checkoff sheet and do a code review.
+# DONE: 6. Call over a TA or instructor to sign your team's checkoff sheet and do a code review.
 #
 # Observations you should make, using run_to_rel_pos is useful for accurate turns, but testing takes time.
