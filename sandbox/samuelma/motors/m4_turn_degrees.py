@@ -53,10 +53,12 @@ def drive_inches(self, distance, speed):
 #   Ask the user what speed they would like to use for the turn (0 to 900 degrees per second).
 #   Beep after the turn is complete via a beep in this module (tests to make sure the library is blocking)
 #   When the library method is complete have all team members VCS update and test using their own m4_turn_degrees.py
-    speed = int(input("Enter a speed (0 to 900 dps): "))
-    degrees_to_turn = int(input("Enter a degree turn: "))
-    ev3.Snatch3r().turn_degrees(degrees_to_turn, speed)
-    ev3.Sound.beep().wait()
+    degrees_to_turn = 1
+    while degrees_to_turn != 0:
+        speed = int(input("Enter a speed (0 to 900 dps): "))
+        degrees_to_turn = int(input("Enter a degree turn: "))
+        ev3.Snatch3r().turn_degrees(degrees_to_turn, speed)
+        ev3.Sound.beep().wait()
 
     print("Goodbye!")
     ev3.Sound.speak("Goodbye").wait()
