@@ -8,6 +8,7 @@ Authors: David Fisher and Mary Ashley Samuelson.
 import ev3dev.ev3 as ev3
 import math
 import time
+import robot_controller as robo
 
 # DONE: 2. Copy the contents of m3_drive_inches_via_library.py and paste that text into this file below these comments.
 #   Change the initial print and speak commands to reflect this module, like this...
@@ -16,21 +17,39 @@ import time
 #     print("--------------------------------------------")
 #     ev3.Sound.speak("Turn degrees").wait()
 #   You will need to modify that code for this problem, but it is a handy starting point.
-def drive_inches(self, distance, speed):
-    # Connect two large motors on output ports B and C
-    left_motor = ev3.LargeMotor(ev3.OUTPUT_B)
-    right_motor = ev3.LargeMotor(ev3.OUTPUT_C)
+def main():
+    # --------------------------------------------------------------
+    # We have already implemented this module for you.
+    # There are no TODOs in the code.  Do NOT modify it.
+    # You are not allowed to make any changes to this code.
+    # --------------------------------------------------------------
+    print("--------------------------------------------")
+    print(" Turn Degrees ")
+    print("--------------------------------------------")
+    ev3.Sound.speak("Turn Degrees").wait()
+    robot = robo.Snatch3r()
 
-    # Check that the motors are actually connected
-    assert left_motor.connected
-    assert right_motor.connected
-    left_motor.run_to_rel_pos(position_sp=distance * 360 / 4, speed_sp=speed, stop_action="brake")
-    right_motor.run_to_rel_pos(position_sp=distance * 360 / 4, speed_sp=speed, stop_action="brake")
-    right_motor.wait_while(ev3.Motor.STATE_RUNNING)
-    ev3.Sound.beep().wait()
+    while True:
+        degrees_to_turn = int(input("Degrees to turn: "))
+        if degrees_to_turn == 0:
+            break
+        speed_deg_per_second = int(input("Speed (0 to 900 dps): "))
+        if speed_deg_per_second == 0:
+            break
+
+
+        robot.turn_degrees(degrees_to_turn, speed_deg_per_second)
+        ev3.Sound.beep().wait()  # Fun little beep
 
     print("Goodbye!")
     ev3.Sound.speak("Goodbye").wait()
+
+
+# ----------------------------------------------------------------------
+# Calls  main  to start the ball rolling.
+# ----------------------------------------------------------------------
+main()
+
 
 # DONE: 3. Create a method in your library called turn_degrees that receives the degrees_to_turn and turn_speed_sp
 #   To help you get started here is a potential method signature line that will be in your library.
@@ -53,7 +72,8 @@ def drive_inches(self, distance, speed):
 #   Ask the user what speed they would like to use for the turn (0 to 900 degrees per second).
 #   Beep after the turn is complete via a beep in this module (tests to make sure the library is blocking)
 #   When the library method is complete have all team members VCS update and test using their own m4_turn_degrees.py
-    degrees_to_turn = 1
+
+    """degrees_to_turn = 1
     while degrees_to_turn != 0:
         speed = int(input("Enter a speed (0 to 900 dps): "))
         degrees_to_turn = int(input("Enter a degree turn: "))
@@ -61,7 +81,7 @@ def drive_inches(self, distance, speed):
         ev3.Sound.beep().wait()
 
     print("Goodbye!")
-    ev3.Sound.speak("Goodbye").wait()
+    ev3.Sound.speak("Goodbye").wait()"""
 
 
 # TODO: 5. Formally test your work. When you think you have the problem complete run these tests:
