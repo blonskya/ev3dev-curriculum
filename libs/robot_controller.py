@@ -42,8 +42,8 @@ class Snatch3r(object):
         assert left_motor.connected
         assert right_motor.connected
 
-        left_motor.run_to_rel_pos(position_sp=-degrees_to_turn, speed_sp=turn_speed_sp, stop_action="brake")
-        right_motor.run_to_rel_pos(position_sp=degrees_to_turn, speed_sp=turn_speed_sp, stop_action="brake")
+        left_motor.run_to_rel_pos(position_sp=(-degrees_to_turn/360)*((6-0.0153)/0.011), speed_sp=turn_speed_sp, stop_action="brake")
+        right_motor.run_to_rel_pos(position_sp=(degrees_to_turn/360)*((6-0.0153)/0.011), speed_sp=turn_speed_sp, stop_action="brake")
         right_motor.wait_while(ev3.Motor.STATE_RUNNING)
 
 
