@@ -35,13 +35,17 @@ class Snatch3r(object):
         print("Goodbye!")
         ev3.Sound.speak("Goodbye").wait()
 
+    # TODO: Implement the Snatch3r class as needed when working the sandbox exercises
     def turn_degrees(self, degrees_to_turn, turn_speed_sp):
         left_motor = ev3.LargeMotor(ev3.OUTPUT_B)
         right_motor = ev3.LargeMotor(ev3.OUTPUT_C)
         assert left_motor.connected
         assert right_motor.connected
 
+        left_motor.run_to_rel_pos(position_sp=-degrees_to_turn, speed_sp=turn_speed_sp, stop_action="brake")
+        right_motor.run_to_rel_pos(position_sp=degrees_to_turn, speed_sp=turn_speed_sp, stop_action="brake")
+        right_motor.wait_while(ev3.Motor.STATE_RUNNING)
 
 
-    # TODO: Implement the Snatch3r class as needed when working the sandox exercises
-    # (and delete these comments)
+
+
