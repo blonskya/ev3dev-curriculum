@@ -98,17 +98,17 @@ def main():
     btn.on_backspace = lambda state: handle_shutdown(state, dc)
 
     while dc.running:
-        # TODO: 4. Call the .process() method on your channel 1 RemoteControl object, then review and run your code.
+        # DONE: 4. Call the .process() method on your channel 1 RemoteControl object, then review and run your code.
         #   Review the handle functions below to see how they draw to the screen.  They are already finished.
         rc1.process()
 
-        # TODO: 6. Call the .process() method on your channel 2 - 4 RemoteControl objects and demo your code.
+        # DONE: 6. Call the .process() method on your channel 2 - 4 RemoteControl objects and demo your code.
         #   Review the handle functions below to see how they draw to the screen.  They are already finished.
         rc2.process()
         rc3.process()
         rc4.process()
 
-        # TODO: 7. Call over a TA or instructor to sign your team's checkoff sheet and do a code review.
+        # DONE: 7. Call over a TA or instructor to sign your team's checkoff sheet and do a code review.
         #
         # Observations you should make, IR buttons work exactly like buttons on the EV3.
         #   The screen is a bit annoying to work with due to the Brickman OS interference.
