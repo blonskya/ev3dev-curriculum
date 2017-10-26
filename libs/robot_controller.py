@@ -20,8 +20,6 @@ class Snatch3r(object):
     """Commands for the Snatch3r robot that might be useful in many different programs."""
 
     def drive_inches(self,distance,speed):
-        ev3.Sound.speak("Drive using encoders").wait()
-
         # Connect two large motors on output ports B and C
         left_motor = ev3.LargeMotor(ev3.OUTPUT_B)
         right_motor = ev3.LargeMotor(ev3.OUTPUT_C)
@@ -37,6 +35,13 @@ class Snatch3r(object):
         print("Goodbye!")
         ev3.Sound.speak("Goodbye").wait()
 
+    def turn_degrees(self, degrees_to_turn, turn_speed_sp):
+        left_motor = ev3.LargeMotor(ev3.OUTPUT_B)
+        right_motor = ev3.LargeMotor(ev3.OUTPUT_C)
+        assert left_motor.connected
+        assert right_motor.connected
 
-        # TODO: Implement the Snatch3r class as needed when working the sandox exercises
+
+
+    # TODO: Implement the Snatch3r class as needed when working the sandox exercises
     # (and delete these comments)
