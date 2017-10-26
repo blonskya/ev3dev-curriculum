@@ -73,7 +73,7 @@ main()
 #   Beep after the turn is complete via a beep in this module (tests to make sure the library is blocking)
 #   When the library method is complete have all team members VCS update and test using their own m4_turn_degrees.py
 
-    """degrees_to_turn = 1
+""" degrees_to_turn = 1
     while degrees_to_turn != 0:
         speed = int(input("Enter a speed (0 to 900 dps): "))
         degrees_to_turn = int(input("Enter a degree turn: "))
