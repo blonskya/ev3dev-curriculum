@@ -43,6 +43,16 @@ class Snatch3r(object):
         left_motor.run_to_rel_pos(position_sp=(-degrees_to_turn/360)*((6-0.0153)/0.011)*math.pi, speed_sp=turn_speed_sp, stop_action="brake")
         right_motor.run_to_rel_pos(position_sp=(degrees_to_turn/360)*((6-0.0153)/0.011)*math.pi, speed_sp=turn_speed_sp, stop_action="brake")
         right_motor.wait_while(ev3.Motor.STATE_RUNNING)
+    def shutdown(self):
+        left_motor = ev3.LargeMotor(ev3.OUTPUT_B)
+        right_motor = ev3.LargeMotor(ev3.OUTPUT_C)
+
+        left_motor.stop_action(stop_action="brake")
+        right_motor.stop_action(stop_action="brake")
+        ev3.Leds.set_color(ev3.Leds.LEFT, ev3.Leds.GREEN)
+        ev3.Leds.set_color(ev3.Leds.RIGHT, ev3.Leds.GREEN)
+        print("Goodbye")
+        ev3.Sound.speak("Goodbye")
 
 
 
