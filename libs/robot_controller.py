@@ -55,7 +55,7 @@ class Snatch3r(object):
         ev3.Sound.speak("Goodbye")
 
     def arm_calibration(self, arm_motor, touch_sensor):
-        arm_motor.run_forever(speed_sp=100)
+        arm_motor.run_forever(speed_sp=300)
         while not touch_sensor.is_pressed:
             time.sleep(0.01)
         arm_motor.stop(stop_action="brake")
