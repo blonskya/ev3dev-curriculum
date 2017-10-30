@@ -104,29 +104,29 @@ def main():
             motor.stop(stop_action="brake")
             ev3.Leds.set_color(ev3.Leds.RIGHT, ev3.Leds.BLACK)
 
-    def handle_shutdown(button_state, dc):
+    def shutdown(button_state, dc2):
         if button_state:
-            dc.running = False
+            dc2.running = False
 
     # For our standard shutdown button.
     btn = ev3.Button()
-    btn.on_backspace = lambda state: handle_shutdown(state, dc)
-    Ir1 = ev3.RemoteControl(channel=1)
-    Ir2 = ev3.RemoteControl(channel=2)
+    btn.on_backspace = lambda state: shutdown(state, dc)
+    ir1 = ev3.RemoteControl(channel=1)
+    ir2 = ev3.RemoteControl(channel=2)
 
-    Ir1.on_red_up = lambda state: handle_red_up_1(state, left_motor)
-    Ir1.on_red_down = lambda state: handle_red_down_1(state, left_motor)
-    Ir1.on_blue_up = lambda state: handle_blue_up_1(state, right_motor)
-    Ir1.on_blue_down = lambda state: handle_blue_down_1(state, right_motor)
-    Ir2.on_red_up = lambda state: handle_arm_up_button(state, robot)
-    Ir2.on_red_down = lambda state: handle_arm_down_button(state, robot)
-    Ir2.on_blue_up = lambda state: handle_calibrate_button(state, robot)
+    ir1.on_red_up = lambda state: handle_red_up_1(state, left_motor)
+    ir1.on_red_down = lambda state: handle_red_down_1(state, left_motor)
+    ir1.on_blue_up = lambda state: handle_blue_up_1(state, right_motor)
+    ir1.on_blue_down = lambda state: handle_blue_down_1(state, right_motor)
+    ir2.on_red_up = lambda state: handle_arm_up_button(state, robot)
+    ir2.on_red_down = lambda state: handle_arm_down_button(state, robot)
+    ir2.on_blue_up = lambda state: handle_calibrate_button(state, robot)
     robot.arm_calibration()  # Start with an arm calibration in this program.
 
     while dc.running:
         # Done: 5. Process the RemoteControl objects.
-        Ir1.process()
-        Ir2.process()
+        ir1.process()
+        ir2.process()
         btn.process()
         time.sleep(0.01)
 
@@ -144,7 +144,7 @@ def main():
 # ----------------------------------------------------------------------
 # Done: 6. Implement the IR handler callbacks handlers
 
-# TODO: 7. When your program is complete, call over a TA or instructor to sign your checkoff sheet and do a code review.
+# Done: 7. When your program is complete, call over a TA or instructor to sign your checkoff sheet and do a code review.
 #
 # Observations you should make, IR buttons are a fun way to control the robot.
 
