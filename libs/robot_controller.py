@@ -19,7 +19,7 @@ import time
 class Snatch3r(object):
     """Commands for the Snatch3r robot that might be useful in many different programs."""
 
-    def drive_inches(self,distance,speed):
+    def drive_inches(self, distance, speed):
         # Connect two large motors on output ports B and C
         left_motor = ev3.LargeMotor(ev3.OUTPUT_B)
         right_motor = ev3.LargeMotor(ev3.OUTPUT_C)
@@ -31,8 +31,8 @@ class Snatch3r(object):
         right_motor.run_to_rel_pos(position_sp=distance * 360 / 4, speed_sp=speed, stop_action="brake")
         right_motor.wait_while(ev3.Motor.STATE_RUNNING)
 
-
     # DONE: Implement the Snatch3r class as needed when working the sandbox exercises
+
     def turn_degrees(self, degrees_to_turn, turn_speed_sp):
         """turns the amount of degrees specified in the speed specified"""
         left_motor = ev3.LargeMotor(ev3.OUTPUT_B)
@@ -40,10 +40,14 @@ class Snatch3r(object):
         assert left_motor.connected
         assert right_motor.connected
 
-        left_motor.run_to_rel_pos(position_sp=(-degrees_to_turn/360)*((6-0.0153)/0.011)*math.pi, speed_sp=turn_speed_sp, stop_action="brake")
-        right_motor.run_to_rel_pos(position_sp=(degrees_to_turn/360)*((6-0.0153)/0.011)*math.pi, speed_sp=turn_speed_sp, stop_action="brake")
+        left_motor.run_to_rel_pos(position_sp=(-degrees_to_turn/360)*((6-0.0153)/0.011)*math.pi, speed_sp=turn_speed_sp,
+                                  stop_action="brake")
+        right_motor.run_to_rel_pos(position_sp=(degrees_to_turn/360)*((6-0.0153)/0.011)*math.pi, speed_sp=turn_speed_sp,
+                                   stop_action="brake")
         right_motor.wait_while(ev3.Motor.STATE_RUNNING)
+
     def shutdown(self):
+        # stops all the motors
         left_motor = ev3.LargeMotor(ev3.OUTPUT_B)
         right_motor = ev3.LargeMotor(ev3.OUTPUT_C)
 
@@ -55,12 +59,13 @@ class Snatch3r(object):
         ev3.Sound.speak("Goodbye")
 
     def arm_calibration(self):
+        # calibrates the arm top and bottom of motion
         arm_motor = ev3.MediumMotor(ev3.OUTPUT_A)
         assert arm_motor.connected
         touch_sensor = ev3.TouchSensor()
         assert touch_sensor
 
-        arm_motor.run_forever(speed_sp=300)
+        arm_motor.run_forever(speed_sp=900)
         while not touch_sensor.is_pressed:
             time.sleep(0.01)
         arm_motor.stop(stop_action="brake")
@@ -70,28 +75,27 @@ class Snatch3r(object):
         arm_motor.wait_while(ev3.Motor.STATE_RUNNING)
         arm_motor.position = 0  # Calibrate the down position as 0 (this line is correct as is).
 
-
     def arm_up(self):
+        # moves the arm to the top of its range motion
         arm_motor = ev3.MediumMotor(ev3.OUTPUT_A)
         assert arm_motor.connected
 
         touch_sensor = ev3.TouchSensor()
         assert touch_sensor
 
-        MAX_SPEED = 900
-        arm_motor.run_forever(speed_sp=MAX_SPEED)
+        max_speed = 900
+        arm_motor.run_forever(speed_sp=max_speed)
         while not touch_sensor.is_pressed:
             time.sleep(0.01)
         arm_motor.stop(stop_action="brake")
         ev3.Sound.beep().wait()
 
-
     def arm_down(self):
+        # moves the arm to the bottom of its range of motion
         arm_motor = ev3.MediumMotor(ev3.OUTPUT_A)
         assert arm_motor.connected
 
         arm_motor.run_to_abs_pos(position_sp=0)
         arm_motor.wait_while(ev3.Motor.STATE_RUNNING)  # Blocks until the motor finishes running
         ev3.Sound.beep().wait()
-
 
