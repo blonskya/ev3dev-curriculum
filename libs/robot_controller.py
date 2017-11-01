@@ -18,6 +18,8 @@ import time
 
 class Snatch3r(object):
     """Commands for the Snatch3r robot that might be useful in many different programs."""
+    def __init__(self):
+        self.running=True
 
     def drive_inches(self, distance, speed):
         # Connect two large motors on output ports B and C
@@ -31,10 +33,20 @@ class Snatch3r(object):
         right_motor.run_to_rel_pos(position_sp=distance * 360 / 4, speed_sp=speed, stop_action="brake")
         right_motor.wait_while(ev3.Motor.STATE_RUNNING)
 
+    def drive_until_otherwise(self, rspeed, lspeed):
+        left_motor = ev3.LargeMotor(ev3.OUTPUT_B)
+        right_motor = ev3.LargeMotor(ev3.OUTPUT_C)
+
+        # Check that the motors are actually connected
+        assert left_motor.connected
+        assert right_motor.connected
+        left_motor.run_forever(speed_sp=lspeed)
+        right_motor.run_forever(speed_sp=rspeed)
+
     # DONE: Implement the Snatch3r class as needed when working the sandbox exercises
     def loop_forever(self):
         ''' waits forever'''
-        while True:
+        while self.running:
             time.sleep(0.01)
 
     def turn_degrees(self, degrees_to_turn, turn_speed_sp):
@@ -49,14 +61,20 @@ class Snatch3r(object):
         right_motor.run_to_rel_pos(position_sp=(degrees_to_turn/360)*((6-0.0153)/0.011)*math.pi, speed_sp=turn_speed_sp,
                                    stop_action="brake")
         right_motor.wait_while(ev3.Motor.STATE_RUNNING)
+    def stop(self):
+        left_motor = ev3.LargeMotor(ev3.OUTPUT_B)
+        right_motor = ev3.LargeMotor(ev3.OUTPUT_C)
+        left_motor.stop(stop_action="brake")
+        right_motor.stop(stop_action="brake")
 
     def shutdown(self):
         # stops all the motors
+        self.running = False
         left_motor = ev3.LargeMotor(ev3.OUTPUT_B)
         right_motor = ev3.LargeMotor(ev3.OUTPUT_C)
+        left_motor.stop(stop_action="brake")
+        right_motor.stop(stop_action="brake")
 
-        left_motor.stop_action(stop_action="brake")
-        right_motor.stop_action(stop_action="brake")
         ev3.Leds.set_color(ev3.Leds.LEFT, ev3.Leds.GREEN)
         ev3.Leds.set_color(ev3.Leds.RIGHT, ev3.Leds.GREEN)
         print("Goodbye")
