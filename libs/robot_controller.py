@@ -32,6 +32,10 @@ class Snatch3r(object):
         right_motor.wait_while(ev3.Motor.STATE_RUNNING)
 
     # DONE: Implement the Snatch3r class as needed when working the sandbox exercises
+    def loop_forever(self):
+        ''' waits forever'''
+        while True:
+            time.sleep(0.01)
 
     def turn_degrees(self, degrees_to_turn, turn_speed_sp):
         """turns the amount of degrees specified in the speed specified"""
