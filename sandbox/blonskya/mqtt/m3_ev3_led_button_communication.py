@@ -134,7 +134,7 @@ def handle_button_press(button_state, mqtt_client, button_name):
     """Handle IR / button event."""
     if button_state:
         print("{} button was pressed".format(button_name))
-        mqtt_client.send_message('print',[button_name])
+        mqtt_client.send_message('button_pressed',[button_name])
 
         # Done: 4. Send a message using MQTT that will:
         #   -- Call the method called "button_pressed" on the delegate at the other end of the pipe.
