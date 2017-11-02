@@ -21,33 +21,50 @@ class Snatch3r(object):
     def __init__(self):
         self.running=True
         self.touch_sensor = ev3.TouchSensor()
+        self.eyes=ev3.InfraredSensor()
+        assert self.eyes.connected
+        self.seeker=ev3.BeaconSeeker(channel=4)
+        self.left_motor = ev3.LargeMotor(ev3.OUTPUT_B)
+        self.right_motor = ev3.LargeMotor(ev3.OUTPUT_C)
+        assert self.left_motor.connected
+        assert self.right_motor.connected
+
 
     def distance(self):
-        eyes = ev3.InfraredSensor()
-        assert eyes.connected
-        return eyes.proximity
+        return self.eyes.proximity
+
+    def seek_beacon(self):
+        if self.seeker.distance == -128:
+            self.right_motor.run_forever(speed_sp=100)
+            self.left_motor.run_forever(speed_sp=-100)
+        else:
+            self.left_motor.stop(stop_action="break")
+            self.right_motor.stop(stop_action="break")
+            if self.seeker.heading > 0:
+                while not self.seeker.heading == 0:
+                    self.right_motor.run_forever(speed_sp=-100)
+                    self.left_motor.run_forever(speed_sp=100)
+                self.left_motor.stop(stop_action="break")
+                self.right_motor.stop(stop_action="break")
+            elif self.seeker.heading <0:
+                while not self.seeker.heading == 0:
+                    self.right_motor.run_forever(speed_sp=100)
+                    self.left_motor.run_forever(speed_sp=-100)
+                self.left_motor.stop(stop_action="break")
+                self.right_motor.stop(stop_action="break")
+            while not self.seeker.distance < 10:
+                self.right_motor.run_forever(speed_sp=100)
+                self.left_motor.run_forever(speed_sp=100)
+
 
     def drive_inches(self, distance, speed):
-        # Connect two large motors on output ports B and C
-        left_motor = ev3.LargeMotor(ev3.OUTPUT_B)
-        right_motor = ev3.LargeMotor(ev3.OUTPUT_C)
-
-        # Check that the motors are actually connected
-        assert left_motor.connected
-        assert right_motor.connected
-        left_motor.run_to_rel_pos(position_sp=distance * 360 / 4, speed_sp=speed, stop_action="brake")
-        right_motor.run_to_rel_pos(position_sp=distance * 360 / 4, speed_sp=speed, stop_action="brake")
-        right_motor.wait_while(ev3.Motor.STATE_RUNNING)
+        self.left_motor.run_to_rel_pos(position_sp=distance * 360 / 4, speed_sp=speed, stop_action="brake")
+        self.right_motor.run_to_rel_pos(position_sp=distance * 360 / 4, speed_sp=speed, stop_action="brake")
+        self.right_motor.wait_while(ev3.Motor.STATE_RUNNING)
 
     def drive_until_otherwise(self, rspeed, lspeed):
-        left_motor = ev3.LargeMotor(ev3.OUTPUT_B)
-        right_motor = ev3.LargeMotor(ev3.OUTPUT_C)
-
-        # Check that the motors are actually connected
-        assert left_motor.connected
-        assert right_motor.connected
-        left_motor.run_forever(speed_sp=lspeed)
-        right_motor.run_forever(speed_sp=rspeed)
+        self.left_motor.run_forever(speed_sp=lspeed)
+        self.right_motor.run_forever(speed_sp=rspeed)
 
     # DONE: Implement the Snatch3r class as needed when working the sandbox exercises
     def loop_forever(self):
@@ -57,29 +74,20 @@ class Snatch3r(object):
 
     def turn_degrees(self, degrees_to_turn, turn_speed_sp):
         """turns the amount of degrees specified in the speed specified"""
-        left_motor = ev3.LargeMotor(ev3.OUTPUT_B)
-        right_motor = ev3.LargeMotor(ev3.OUTPUT_C)
-        assert left_motor.connected
-        assert right_motor.connected
-
-        left_motor.run_to_rel_pos(position_sp=(-degrees_to_turn/360)*((6-0.0153)/0.011)*math.pi, speed_sp=turn_speed_sp,
+        self.left_motor.run_to_rel_pos(position_sp=(-degrees_to_turn/360)*((6-0.0153)/0.011)*math.pi, speed_sp=turn_speed_sp,
                                   stop_action="brake")
-        right_motor.run_to_rel_pos(position_sp=(degrees_to_turn/360)*((6-0.0153)/0.011)*math.pi, speed_sp=turn_speed_sp,
+        self.right_motor.run_to_rel_pos(position_sp=(degrees_to_turn/360)*((6-0.0153)/0.011)*math.pi, speed_sp=turn_speed_sp,
                                    stop_action="brake")
-        right_motor.wait_while(ev3.Motor.STATE_RUNNING)
+        self.right_motor.wait_while(ev3.Motor.STATE_RUNNING)
     def stop(self):
-        left_motor = ev3.LargeMotor(ev3.OUTPUT_B)
-        right_motor = ev3.LargeMotor(ev3.OUTPUT_C)
-        left_motor.stop(stop_action="brake")
-        right_motor.stop(stop_action="brake")
+        self.left_motor.stop(stop_action="brake")
+        self.right_motor.stop(stop_action="brake")
 
     def shutdown(self):
         # stops all the motors
         self.running = False
-        left_motor = ev3.LargeMotor(ev3.OUTPUT_B)
-        right_motor = ev3.LargeMotor(ev3.OUTPUT_C)
-        left_motor.stop(stop_action="brake")
-        right_motor.stop(stop_action="brake")
+        self.left_motor.stop(stop_action="brake")
+        self.right_motor.stop(stop_action="brake")
 
         ev3.Leds.set_color(ev3.Leds.LEFT, ev3.Leds.GREEN)
         ev3.Leds.set_color(ev3.Leds.RIGHT, ev3.Leds.GREEN)
