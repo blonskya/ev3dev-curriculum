@@ -21,6 +21,11 @@ class Snatch3r(object):
     def __init__(self):
         self.running=True
 
+    def distance(self):
+        eyes = ev3.InfraredSensor()
+        assert eyes.connected
+        self.seen = eyes.proximity()
+
     def drive_inches(self, distance, speed):
         # Connect two large motors on output ports B and C
         left_motor = ev3.LargeMotor(ev3.OUTPUT_B)
