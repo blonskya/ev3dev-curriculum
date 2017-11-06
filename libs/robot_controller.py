@@ -32,6 +32,75 @@ class Snatch3r(object):
 
     def distance(self):
         return self.eyes.proximity
+    def seek_beacon(self):
+        beacon_seeker = ev3.BeaconSeeker(channel=1)
+
+        forward_speed = 300
+        turn_speed = 100
+
+        while not self.touch_sensor.is_pressed:
+            # The touch sensor can be used to abort the attempt (sometimes handy during testing)
+            # Done: 3. Use the beacon_seeker object to get the current heading and distance.
+            current_heading = beacon_seeker.heading  # use the beacon_seeker heading
+            current_distance = beacon_seeker.distance  # use the beacon_seeker distance
+            print(current_heading, current_distance, math.fabs(current_heading))
+            if current_distance == -128:
+                # If the IR Remote is not found just sit idle for this program until it is moved.
+                print("IR Remote not found. Distance is -128")
+                self.stop()
+            else:
+                # Done: 4. Implement the following strategy to find the beacon.
+                # If the absolute value of the current_heading is less than 2, you are on the right heading.
+                #     If the current_distance is 0 return from this function, you have found the beacon!  return True
+                #     If the current_distance is greater than 0 drive straight forward (forward_speed, forward_speed)
+                # If the absolute value of the current_heading is NOT less than 2 but IS less than 10, you need to spin
+                #     If the current_heading is less than 0 turn left (-turn_speed, turn_speed)
+                #     If the current_heading is greater than 0 turn right  (turn_speed, -turn_speed)
+                # If the absolute value of current_heading is greater than 10, then stop and print Heading too far off
+                #
+                # Using that plan you should find the beacon if the beacon is in range.  If the beacon is not in range your
+                # robot should just sit still until the beacon is placed into view.  It is recommended that you always print
+                # something each pass through the loop to help you debug what is going on.  Examples:
+                #    print("On the right heading. Distance: ", current_distance)
+                #    print("Adjusting heading: ", current_heading)
+                #    print("Heading is too far off to fix: ", current_heading)
+
+                # Here is some code to help get you started
+                if math.fabs(current_heading) <= 2:
+                    if current_distance > 1:
+                        # Close enough of a heading to move forward
+                        self.left_motor.run_forever(speed_sp=forward_speed)
+                        print("On the right heading. Distance: ", current_distance)
+                        self.right_motor.run_forever(speed_sp=forward_speed)
+                        # You add more!
+                    else:
+                        print("Found it")
+                        self.right_motor.stop(stop_action="brake")
+                        self.left_motor.stop(stop_action="brake")
+                        return True
+                elif math.fabs(current_heading) > 10:
+                    print("Heading is too far off to fix: ", current_heading)
+                    self.left_motor.stop(stop_action="brake")
+                    self.right_motor.stop(stop_action="brake")
+                    return False
+                elif current_heading > 2:
+                    print("Adjusting heading: ", current_heading)
+                    while current_heading > 2:
+                        current_heading = beacon_seeker.heading  # use the beacon_seeker heading
+                        self.right_motor.run_forever(speed_sp=-turn_speed)
+                        self.left_motor.run_forever(speed_sp=turn_speed)
+                    self.left_motor.stop(stop_action="brake")
+                    self.right_motor.stop(stop_action="brake")
+                elif current_heading < -2:
+                    print("Adjusting heading: ", current_heading)
+                    while current_heading < -2:
+                        current_heading = beacon_seeker.heading  # use the beacon_seeker heading
+                        self.right_motor.run_forever(speed_sp=turn_speed)
+                        self.left_motor.run_forever(speed_sp=-turn_speed)
+                    self.left_motor.stop(stop_action="brake")
+                    self.right_motor.stop(stop_action="brake")
+                else:
+                    print("failure")
 
     def seek_beacon(self):
         if self.seeker.distance == -128:
