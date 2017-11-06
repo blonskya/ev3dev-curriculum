@@ -89,8 +89,8 @@ def main():
     back_button = ttk.Button(main_frame, text="Back")
     back_button.grid(row=4, column=1)
     # back_button and '<Down>' key
-    back_button['command'] = lambda: move(mqtt_client, left_speed_entry, right_speed_entry)
-    root.bind('<Down>', lambda event: move(mqtt_client, left_speed_entry, right_speed_entry))
+    back_button['command'] = lambda: move(mqtt_client, -int(left_speed_entry.get()), -int(right_speed_entry.get()))
+    root.bind('<Down>', lambda event: move(mqtt_client, -int(left_speed_entry.get()), -int(right_speed_entry.get())))
 
 
     up_button = ttk.Button(main_frame, text="Up")
@@ -118,7 +118,7 @@ def main():
 # ----------------------------------------------------------------------
 # Tkinter callbacks
 # ----------------------------------------------------------------------
-# TODO: 4. Implement the functions for the drive button callbacks.
+# DONE: 4. Implement the functions for the drive button callbacks.
 
 # TODO: 5. Call over a TA or instructor to sign your team's checkoff sheet and do a code review.  This is the final one!
 #
