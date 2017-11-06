@@ -28,10 +28,11 @@ class Snatch3r(object):
         self.right_motor = ev3.LargeMotor(ev3.OUTPUT_C)
         assert self.left_motor.connected
         assert self.right_motor.connected
-
+        self.pixy = ev3.Sensor(driver_name="pixy-lego")
 
     def distance(self):
         return self.eyes.proximity
+
     def seek_beacon(self):
         beacon_seeker = ev3.BeaconSeeker(channel=1)
 
