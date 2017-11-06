@@ -58,17 +58,17 @@ def seek_beacon(robot):
     """
 
     # Done: 2. Create a BeaconSeeker object on channel 1.
-    BeaconSeeker=ev3.BeaconSeeker(channel=1)
+    beacon_seeker=ev3.BeaconSeeker(channel=1)
 
     forward_speed = 300
     turn_speed = 100
 
     while not robot.touch_sensor.is_pressed:
         # The touch sensor can be used to abort the attempt (sometimes handy during testing)
-
         # Done: 3. Use the beacon_seeker object to get the current heading and distance.
-        current_heading = BeaconSeeker.heading  # use the beacon_seeker heading
-        current_distance = BeaconSeeker.distance  # use the beacon_seeker distance
+        current_heading = beacon_seeker.heading  # use the beacon_seeker heading
+        current_distance = beacon_seeker.distance  # use the beacon_seeker distance
+        print(current_heading, current_distance, math.fabs(current_heading))
         if current_distance == -128:
             # If the IR Remote is not found just sit idle for this program until it is moved.
             print("IR Remote not found. Distance is -128")
@@ -91,32 +91,42 @@ def seek_beacon(robot):
             #    print("Heading is too far off to fix: ", current_heading)
 
             # Here is some code to help get you started
-            if math.fabs(current_heading) < 2 & current_distance != 0:
-                # Close enough of a heading to move forward
-                print("On the right heading. Distance: ", current_distance)
-                robot.left_motor.run_forever(speed_sp = forward_speed)
-                robot.right_motor.run_forever(speed_sp = forward_speed)
-                # You add more!
-            elif math.fabs(current_heading)<2 & current_distance == 0:
-                return True
-            elif math.fabs(current_heading)>10:
+            if math.fabs(current_heading) <= 2:
+                if current_distance > 1:
+                    # Close enough of a heading to move forward
+                    robot.left_motor.run_forever(speed_sp = forward_speed)
+                    print("On the right heading. Distance: ", current_distance)
+                    robot.right_motor.run_forever(speed_sp = forward_speed)
+                    # You add more!
+                else:
+                    print("Found it")
+                    robot.right_motor.stop(stop_action="brake")
+                    robot.left_motor.stop(stop_action="brake")
+                    return True
+            elif math.fabs(current_heading) > 10:
                 print("Heading is too far off to fix: ", current_heading)
+                robot.left_motor.stop(stop_action="brake")
+                robot.right_motor.stop(stop_action="brake")
                 return False
-            elif current_heading>2:
+            elif current_heading > 2:
                 print("Adjusting heading: ", current_heading)
-                while not current_heading== 2:
+                while current_heading > 2:
+                    current_heading = beacon_seeker.heading  # use the beacon_seeker heading
                     robot.right_motor.run_forever(speed_sp=-turn_speed)
                     robot.left_motor.run_forever(speed_sp=turn_speed)
-                robot.left_motor.stop(stop_action="break")
-                robot.right_motor.stop(stop_action="break")
-            elif current_heading<-2:
+                robot.left_motor.stop(stop_action="brake")
+                robot.right_motor.stop(stop_action="brake")
+            elif current_heading < -2:
                 print("Adjusting heading: ", current_heading)
-                while not current_heading == -2:
+                while current_heading < -2:
+                    current_heading = beacon_seeker.heading  # use the beacon_seeker heading
                     robot.right_motor.run_forever(speed_sp=turn_speed)
                     robot.left_motor.run_forever(speed_sp=-turn_speed)
-                robot.left_motor.stop(stop_action="break")
-                robot.right_motor.stop(stop_action="break")
-        time.sleep(0.2)
+                robot.left_motor.stop(stop_action="brake")
+                robot.right_motor.stop(stop_action="brake")
+            else:
+                print("failure")
+        time.sleep(0.1)
 
     # The touch_sensor was pressed to abort the attempt if this code runs.
     print("Abandon ship!")
