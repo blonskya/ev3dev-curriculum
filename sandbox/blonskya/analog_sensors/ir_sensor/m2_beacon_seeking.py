@@ -31,7 +31,7 @@ def main():
         while True:
             found = seek_beacon(robot)
 
-            # TODO: 5. Save the result of the seek_beacon function (a bool), then use that value to only say "Found the
+            # Done: 5. Save the result of the seek_beacon function (a bool), then use that value to only say "Found the
             # beacon" if the return value is True.  (i.e. don't say "Found the beacon" if the attempts was cancelled.)
             if found == True:
                 ev3.Sound.speak("Found the beacon")
@@ -58,7 +58,10 @@ def seek_beacon(robot):
     """
 
     # Done: 2. Create a BeaconSeeker object on channel 1.
+    ir_sensor = ev3.InfraredSensor()
+    assert ir_sensor
     beacon_seeker=ev3.BeaconSeeker(channel=1)
+    assert beacon_seeker
 
     forward_speed = 300
     turn_speed = 100
@@ -126,7 +129,7 @@ def seek_beacon(robot):
                 robot.right_motor.stop(stop_action="brake")
             else:
                 print("failure")
-        time.sleep(0.1)
+        time.sleep(0.3)
 
     # The touch_sensor was pressed to abort the attempt if this code runs.
     print("Abandon ship!")

@@ -23,7 +23,7 @@ class Snatch3r(object):
         self.touch_sensor = ev3.TouchSensor()
         self.eyes=ev3.InfraredSensor()
         assert self.eyes.connected
-        self.seeker=ev3.BeaconSeeker(channel=4)
+        self.seeker=ev3.BeaconSeeker(channel=1)
         self.left_motor = ev3.LargeMotor(ev3.OUTPUT_B)
         self.right_motor = ev3.LargeMotor(ev3.OUTPUT_C)
         assert self.left_motor.connected
@@ -34,17 +34,16 @@ class Snatch3r(object):
         return self.eyes.proximity
 
     def seek_beacon(self):
-        beacon_seeker = ev3.BeaconSeeker(channel=1)
-
         forward_speed = 300
         turn_speed = 100
 
         while not self.touch_sensor.is_pressed:
             # The touch sensor can be used to abort the attempt (sometimes handy during testing)
             # Done: 3. Use the beacon_seeker object to get the current heading and distance.
-            current_heading = beacon_seeker.heading  # use the beacon_seeker heading
-            current_distance = beacon_seeker.distance  # use the beacon_seeker distance
+            current_heading = self.seeker.heading  # use the beacon_seeker heading
+            current_distance = self.seeker.distance  # use the beacon_seeker distance
             print(current_heading, current_distance, math.fabs(current_heading))
+
             if current_distance == -128:
                 # If the IR Remote is not found just sit idle for this program until it is moved.
                 print("IR Remote not found. Distance is -128")
@@ -67,13 +66,61 @@ class Snatch3r(object):
                 #    print("Heading is too far off to fix: ", current_heading)
 
                 # Here is some code to help get you started
-                if math.fabs(current_heading) <= 2:
+                if math.fabs(current_heading) <= 1:
                     if current_distance > 1:
                         # Close enough of a heading to move forward
                         self.left_motor.run_forever(speed_sp=forward_speed)
                         print("On the right heading. Distance: ", current_distance)
                         self.right_motor.run_forever(speed_sp=forward_speed)
                         # You add more!
+                    else:
+                        print("Found it")
+                        time.sleep(0.1)
+                        self.right_motor.stop(stop_action="brake")
+                        self.left_motor.stop(stop_action="brake")
+                        return True
+                elif math.fabs(current_heading) > 10:
+                    print("Heading is too far off to fix: ", current_heading)
+                    self.left_motor.stop(stop_action="brake")
+                    self.right_motor.stop(stop_action="brake")
+                    return False
+                elif current_heading > 2:
+                    print("Adjusting heading: ", current_heading)
+                    while current_heading > 2:
+                        current_heading = self.seeker.heading  # use the beacon_seeker heading
+                        self.right_motor.run_forever(speed_sp=-turn_speed)
+                        self.left_motor.run_forever(speed_sp=turn_speed)
+                    self.left_motor.stop(stop_action="brake")
+                    self.right_motor.stop(stop_action="brake")
+                elif current_heading < -2:
+                    print("Adjusting heading: ", current_heading)
+                    while current_heading < -2:
+                        current_heading = self.seeker.heading  # use the beacon_seeker heading
+                        self.right_motor.run_forever(speed_sp=turn_speed)
+                        self.left_motor.run_forever(speed_sp=-turn_speed)
+                    self.left_motor.stop(stop_action="brake")
+                    self.right_motor.stop(stop_action="brake")
+                else:
+                    print("failure")
+            time.sleep(0.3)
+
+    def seek_beacon(self):
+        current_heading = self.seeker.heading  # use the beacon_seeker heading
+        current_distance = self.seeker.distance  # use the beacon_seeker distance
+        print(current_heading, current_distance, math.fabs(current_heading))
+
+        while not self.touch_sensor.is_pressed:
+            if current_distance == -128:
+                # If the IR Remote is not found just sit idle for this program until it is moved.
+                print("IR Remote not found. Distance is -128")
+                self.stop()
+            else:
+                if math.fabs(current_heading) <= 2:
+                    if current_distance > 1:
+                        # Close enough of a heading to move forward
+                        self.left_motor.run_forever(speed_sp=300)
+                        print("On the right heading. Distance: ", current_distance)
+                        self.right_motor.run_forever(speed_sp=300)
                     else:
                         print("Found it")
                         self.right_motor.stop(stop_action="brake")
@@ -87,44 +134,22 @@ class Snatch3r(object):
                 elif current_heading > 2:
                     print("Adjusting heading: ", current_heading)
                     while current_heading > 2:
-                        current_heading = beacon_seeker.heading  # use the beacon_seeker heading
-                        self.right_motor.run_forever(speed_sp=-turn_speed)
-                        self.left_motor.run_forever(speed_sp=turn_speed)
+                        current_heading = self.seeker.heading  # use the beacon_seeker heading
+                        self.right_motor.run_forever(speed_sp=-100)
+                        self.left_motor.run_forever(speed_sp=100)
                     self.left_motor.stop(stop_action="brake")
                     self.right_motor.stop(stop_action="brake")
                 elif current_heading < -2:
                     print("Adjusting heading: ", current_heading)
                     while current_heading < -2:
-                        current_heading = beacon_seeker.heading  # use the beacon_seeker heading
-                        self.right_motor.run_forever(speed_sp=turn_speed)
-                        self.left_motor.run_forever(speed_sp=-turn_speed)
+                        current_heading = self.seeker.heading  # use the beacon_seeker heading
+                        self.right_motor.run_forever(speed_sp=100)
+                        self.left_motor.run_forever(speed_sp=-100)
                     self.left_motor.stop(stop_action="brake")
                     self.right_motor.stop(stop_action="brake")
                 else:
                     print("failure")
 
-    def seek_beacon(self):
-        if self.seeker.distance == -128:
-            self.right_motor.run_forever(speed_sp=100)
-            self.left_motor.run_forever(speed_sp=-100)
-        else:
-            self.left_motor.stop(stop_action="break")
-            self.right_motor.stop(stop_action="break")
-            if self.seeker.heading > 0:
-                while not self.seeker.heading == 0:
-                    self.right_motor.run_forever(speed_sp=-100)
-                    self.left_motor.run_forever(speed_sp=100)
-                self.left_motor.stop(stop_action="break")
-                self.right_motor.stop(stop_action="break")
-            elif self.seeker.heading <0:
-                while not self.seeker.heading == 0:
-                    self.right_motor.run_forever(speed_sp=100)
-                    self.left_motor.run_forever(speed_sp=-100)
-                self.left_motor.stop(stop_action="break")
-                self.right_motor.stop(stop_action="break")
-            while not self.seeker.distance < 10:
-                self.right_motor.run_forever(speed_sp=100)
-                self.left_motor.run_forever(speed_sp=100)
 
 
     def drive_inches(self, distance, speed):
@@ -145,9 +170,9 @@ class Snatch3r(object):
     def turn_degrees(self, degrees_to_turn, turn_speed_sp):
         """turns the amount of degrees specified in the speed specified"""
         self.left_motor.run_to_rel_pos(position_sp=(-degrees_to_turn/360)*((6-0.0153)/0.011)*math.pi, speed_sp=turn_speed_sp,
-                                  stop_action="brake")
+                                       stop_action="brake")
         self.right_motor.run_to_rel_pos(position_sp=(degrees_to_turn/360)*((6-0.0153)/0.011)*math.pi, speed_sp=turn_speed_sp,
-                                   stop_action="brake")
+                                        stop_action="brake")
         self.right_motor.wait_while(ev3.Motor.STATE_RUNNING)
     def stop(self):
         self.left_motor.stop(stop_action="brake")
