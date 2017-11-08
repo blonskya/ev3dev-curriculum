@@ -133,22 +133,15 @@ class Snatch3r(object):
                     return False
                 elif current_heading > 2:
                     print("Adjusting heading: ", current_heading)
-                    while current_heading > 2:
-                        current_heading = self.seeker.heading  # use the beacon_seeker heading
-                        self.right_motor.run_forever(speed_sp=-100)
-                        self.left_motor.run_forever(speed_sp=100)
-                    self.left_motor.stop(stop_action="brake")
-                    self.right_motor.stop(stop_action="brake")
+                    self.right_motor.run_forever(speed_sp=-100)
+                    self.left_motor.run_forever(speed_sp=100)
                 elif current_heading < -2:
                     print("Adjusting heading: ", current_heading)
-                    while current_heading < -2:
-                        current_heading = self.seeker.heading  # use the beacon_seeker heading
-                        self.right_motor.run_forever(speed_sp=100)
-                        self.left_motor.run_forever(speed_sp=-100)
-                    self.left_motor.stop(stop_action="brake")
-                    self.right_motor.stop(stop_action="brake")
+                    self.right_motor.run_forever(speed_sp=100)
+                    self.left_motor.run_forever(speed_sp=-100)
                 else:
                     print("failure")
+            time.sleep(0.3)
 
 
 
