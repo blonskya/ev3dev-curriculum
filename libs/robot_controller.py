@@ -21,8 +21,6 @@ class Snatch3r(object):
     def __init__(self):
         self.running=True
         self.touch_sensor = ev3.TouchSensor()
-        self.eyes=ev3.InfraredSensor()
-        assert self.eyes.connected
         self.seeker=ev3.BeaconSeeker(channel=1)
         self.left_motor = ev3.LargeMotor(ev3.OUTPUT_B)
         self.right_motor = ev3.LargeMotor(ev3.OUTPUT_C)
@@ -31,6 +29,9 @@ class Snatch3r(object):
         self.pixy = ev3.Sensor(driver_name="pixy-lego")
 
     def distance(self):
+        self.eyes=ev3.InfraredSensor()
+        assert self.eyes.connected
+
         return self.eyes.proximity
 
     def seek_beacon(self):
@@ -40,6 +41,7 @@ class Snatch3r(object):
         while not self.touch_sensor.is_pressed:
             # The touch sensor can be used to abort the attempt (sometimes handy during testing)
             # Done: 3. Use the beacon_seeker object to get the current heading and distance.
+            time.sleep(0.35)
             current_heading = self.seeker.heading  # use the beacon_seeker heading
             current_distance = self.seeker.distance  # use the beacon_seeker distance
             print(current_heading, current_distance, math.fabs(current_heading))
@@ -75,7 +77,7 @@ class Snatch3r(object):
                         # You add more!
                     else:
                         print("Found it")
-                        time.sleep(0.1)
+                        time.sleep(1)
                         self.right_motor.stop(stop_action="brake")
                         self.left_motor.stop(stop_action="brake")
                         return True
@@ -86,63 +88,17 @@ class Snatch3r(object):
                     return False
                 elif current_heading > 2:
                     print("Adjusting heading: ", current_heading)
-                    while current_heading > 2:
-                        current_heading = self.seeker.heading  # use the beacon_seeker heading
-                        self.right_motor.run_forever(speed_sp=-turn_speed)
-                        self.left_motor.run_forever(speed_sp=turn_speed)
-                    self.left_motor.stop(stop_action="brake")
-                    self.right_motor.stop(stop_action="brake")
+                    current_heading = self.seeker.heading  # use the beacon_seeker heading
+                    self.right_motor.run_forever(speed_sp=-turn_speed)
+                    self.left_motor.run_forever(speed_sp=turn_speed)
                 elif current_heading < -2:
                     print("Adjusting heading: ", current_heading)
-                    while current_heading < -2:
-                        current_heading = self.seeker.heading  # use the beacon_seeker heading
-                        self.right_motor.run_forever(speed_sp=turn_speed)
-                        self.left_motor.run_forever(speed_sp=-turn_speed)
-                    self.left_motor.stop(stop_action="brake")
-                    self.right_motor.stop(stop_action="brake")
+                    current_heading = self.seeker.heading  # use the beacon_seeker heading
+                    self.right_motor.run_forever(speed_sp=turn_speed)
+                    self.left_motor.run_forever(speed_sp=-turn_speed)
                 else:
                     print("failure")
-            time.sleep(0.3)
-
-    def seek_beacon(self):
-        current_heading = self.seeker.heading  # use the beacon_seeker heading
-        current_distance = self.seeker.distance  # use the beacon_seeker distance
-        print(current_heading, current_distance, math.fabs(current_heading))
-
-        while not self.touch_sensor.is_pressed:
-            if current_distance == -128:
-                # If the IR Remote is not found just sit idle for this program until it is moved.
-                print("IR Remote not found. Distance is -128")
-                self.stop()
-            else:
-                if math.fabs(current_heading) <= 2:
-                    if current_distance > 1:
-                        # Close enough of a heading to move forward
-                        self.left_motor.run_forever(speed_sp=300)
-                        print("On the right heading. Distance: ", current_distance)
-                        self.right_motor.run_forever(speed_sp=300)
-                    else:
-                        print("Found it")
-                        self.right_motor.stop(stop_action="brake")
-                        self.left_motor.stop(stop_action="brake")
-                        return True
-                elif math.fabs(current_heading) > 10:
-                    print("Heading is too far off to fix: ", current_heading)
-                    self.left_motor.stop(stop_action="brake")
-                    self.right_motor.stop(stop_action="brake")
-                    return False
-                elif current_heading > 2:
-                    print("Adjusting heading: ", current_heading)
-                    self.right_motor.run_forever(speed_sp=-100)
-                    self.left_motor.run_forever(speed_sp=100)
-                elif current_heading < -2:
-                    print("Adjusting heading: ", current_heading)
-                    self.right_motor.run_forever(speed_sp=100)
-                    self.left_motor.run_forever(speed_sp=-100)
-                else:
-                    print("failure")
-            time.sleep(0.3)
-
+        self.stop()
 
 
     def drive_inches(self, distance, speed):
