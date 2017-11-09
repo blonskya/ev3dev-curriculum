@@ -52,16 +52,16 @@ def main():
                 Forward.grid(row=3, column=2)
                 Forward['command'] = lambda: send(mqtt_client, "Forward")
                 Backward = ttk.Button(main_frame, text="Backward")
-                Backward.grid(row=7, column=2)
+                Backward.grid(row=5, column=2)
                 Backward['command'] = lambda: send(mqtt_client, "Backward")
                 Left = ttk.Button(main_frame, text="Left")
-                Left.grid(row=5, column=0)
+                Left.grid(row=4, column=0)
                 Left['command'] = lambda: send(mqtt_client, "Left")
                 Right = ttk.Button(main_frame, text="Right")
-                Right.grid(row=5, column=4)
+                Right.grid(row=4, column=4)
                 Right['command'] = lambda: send(mqtt_client, "Right")
                 Brake = ttk.Button(main_frame, text="Brake")
-                Brake.grid(row=5, column=2)
+                Brake.grid(row=4, column=2)
                 Brake['command'] = lambda: send(mqtt_client, "Brake")
                 has_extra = True
         root.update_idletasks()
@@ -74,6 +74,6 @@ def mode(mqtt_client,holder,new_mode):
 
 
 def send(mqtt_client, message):
-    mqtt_client.sendmessage("message")
+    mqtt_client.send_message(message)
 
 main()
