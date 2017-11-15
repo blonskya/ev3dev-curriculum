@@ -2,8 +2,6 @@
 
 import tkinter
 from tkinter import ttk
-import ev3_song_project as sp
-from sp import song
 
 import mqtt_remote_method_calls as com
 
@@ -22,6 +20,8 @@ def main():
     line_break_0.grid(row=1, column=1, columnspan=3)
     line_break_1 = ttk.Label(main_frame, text="- - - - - - - - - - - -")
     line_break_1.grid(row=5, column=1, columnspan=3)
+
+    song_freqs = []
 
     # Calls the set colors function
     # TODO: Tkinter Part One
@@ -67,8 +67,8 @@ def main():
 
     play_song_button = ttk.Button(main_frame, text="Play Back")
     play_song_button.grid(row=8, column=1, columnspan=3)
-    play_song_button['command'] = lambda: play_song(mqtt_client, song, int(note_length_entry.get()), int(note_delay_entry.get()))
-    root.bind('<Right>', lambda event: play_song(mqtt_client, int(note_length_entry.get()), int(note_delay_entry.get())))
+    play_song_button['command'] = lambda: play_song(mqtt_client, song_freqs, int(note_length_entry.get()), int(note_delay_entry.get()))
+    root.bind('<Right>', lambda event: play_song(mqtt_client, song_freqs, int(note_length_entry.get()), int(note_delay_entry.get())))
 
     # Displays the song
     # TODO: Display song on Tkinter

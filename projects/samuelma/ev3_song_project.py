@@ -55,32 +55,36 @@ class MyDelegate(object):
     # should play the notes as seen and should make a list of the notes called song
     # should display the note being played on the screen
     # once done sends the song to the pc to be displayed
-    def record_song(record_speed, num_keys):
-        global song
-        song = []
+    def record_song(self, record_speed, num_keys):
+        song_str = ""
+        song_frq = []
         next_note = ""
         started = 0
-        while not len(song) == num_keys:
+        while not len(song_frq) == num_keys:
             if abs(ev3.ColorSensor.reflected_light_intensity - bw["black"]) <= 5:
                 if started != 0:
-                    song += [next_note]
+                    song_str += next_note.note + " "
+                    song_frq += [next_note.note_freq]
+                    self.mqtt_client.send_message("song_display", ["Song: {}".format(song_str)])
             else:
                 for k in range(7):
                     note = notes[k]
                     if (abs(note.color.red - ev3.ColorSensor().red) <=5 & abs(note.color.green - ev3.ColorSensor().green) <=5 & abs(note.color.blue - ev3.ColorSensor().blue) <=5):
                         ev3.Sound.tone(note.note_freq)
-                        next_note = note.note
+                        next_note = note
                 started = 1
+        self.mqtt_client.send_message("song_freqs", [song_frq])
+
 
 
 
     # TODO: Playback command
     # plays song at received note length and delay between notes
     # should display the note being played on the screen
-    def play_song(self, note_len, delay_len):
+    def play_song(self, song_freqs, note_len, delay_len):
         song = []
-        for k in range(len(self.note_freq)):
-            song += [(self.song_freq[k], note_len, delay_len)]
+        for k in range(len(song_freqs)):
+            song += [(song_freqs[k], note_len, delay_len)]
         ev3.Sound.tone(song).wait()
 
 
