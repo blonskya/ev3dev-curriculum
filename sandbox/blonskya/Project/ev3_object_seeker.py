@@ -64,6 +64,7 @@ def Following_Procedure():
             robot.drive_until_otherwise(-300,-300)
         timehold += 0.1
         time.sleep(0.05)
+    robot.stop()
 
 
 def Chasing_Procedure():
@@ -82,6 +83,7 @@ def Chasing_Procedure():
             robot.drive_until_otherwise(300, 300)
             time.sleep(0.05)
             timehold += 0.05
+    robot.stop()
 
 
 def Manual_Procedure():
@@ -89,9 +91,19 @@ def Manual_Procedure():
 
 
 def Guard_Procedure():
-    Holdex = robot.pixy.value(1)
+    robot = robo.Snatch3r()
+    robot.pixy.mode = "SIG1"
     Holdsize = robot.pixy.value(3) * robot.pixy.value(4)
     timehold = 0
     while timehold < 10:
         if (Holdsize - (robot.pixy.value(3) * robot.pixy.value(4))) < -1:
             robot.beep()
+        timehold += 0.05
+        time.sleep(0.05)
+
+def Distract_Procedure():
+    robot = robo.Snatch3r()
+    robot.drive_until_otherwise(100,-100)
+    robot.beep()
+    time.sleep(10)
+    robot.stop()
