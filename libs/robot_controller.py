@@ -27,12 +27,17 @@ class Snatch3r(object):
         assert self.left_motor.connected
         assert self.right_motor.connected
         self.pixy = ev3.Sensor(driver_name="pixy-lego")
+        self.mode = "Follow"
 
     def distance(self):
         self.eyes=ev3.InfraredSensor()
         assert self.eyes.connected
 
         return self.eyes.proximity
+
+
+    def beep(self):
+        ev3.Sound.beep().wait()
 
     def seek_beacon(self):
         forward_speed = 300

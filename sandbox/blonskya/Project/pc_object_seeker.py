@@ -12,6 +12,7 @@ class Memory (object):
     def __init__(self):
         self.mode = "Follow"
         self.manual_speed=100
+
     def printself(self):
         print(self.mode,self.manual_speed)
 
