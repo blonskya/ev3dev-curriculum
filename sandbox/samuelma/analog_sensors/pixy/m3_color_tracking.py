@@ -24,15 +24,17 @@ def main():
     # This code assumes you have setup the pixy object on the Snatch3r class.
     # Add the pixy property to that class if you have not done so already.
     robot = robo.Snatch3r()
-    robot.pixy.mode = "SIG1"
+    pixy = ev3.Sensor(driver_name="pixy-lego")
+    pixy.mode = "SIG1"
+    assert pixy
     turn_speed = 100
 
     while not robot.touch_sensor.is_pressed:
 
         # DONE: 2. Read the Pixy values for x and y
         # Print the values for x and y
-        x = robot.pixy.values(1)
-        y = robot.pixy.values(2)
+        x = pixy.value(1)
+        y = pixy.value(2)
         print("(X, Y) = ({}, {})".format(x, y))
 
         # DONE: 3. Use the x value to turn the robot
@@ -41,9 +43,9 @@ def main():
         #   If the Pixy x value is between 150 and 170 stop the robot
         # Continuously track the color until the touch sensor is pressed to end the program.
         if x < 150:
-            robot.drive_until_otherwise(-300, 300)
+            robot.drive_until_otherwise(turn_speed, -turn_speed)
         elif x > 170:
-            robot.drive_until_otherwise(300, -300)
+            robot.drive_until_otherwise(-turn_speed, turn_speed)
         else:
             robot.stop()
 
