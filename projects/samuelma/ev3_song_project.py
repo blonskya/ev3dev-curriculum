@@ -16,37 +16,40 @@ a4 = 440.0
 b4 = 493.9
 
 
-def main():
-    my_delegate = MyDelegate()
-    mqtt_client = com.MqttClient(my_delegate)
-    my_delegate.mqtt_client = mqtt_client
-    mqtt_client.connect_to_pc()
+# TODO: Create the Notes Class
+class Notes(object):
+
+    def __init__(self, name, frequency, rgb):
+        self.note = name
+        self.color = rgb
+        self.color.red = self.color[0]
+        self.color.blue = self.color[1]
+        self.color.green = self.color[2]
+        self.note_freq = frequency
 
 
-class MyDelegate(object):
+class SongMaster(object):
 
     def __init__(self):
-        self.running = True
+        self.mqtt_client = None
+        self.note_list = ["C", "D", "E", "F", "G", "A", "B"]
+        self.frequency_list = [261.6, 293.7, 329.6, 349.2, 391.9, 440.0, 493.9]
+        self.bw ={}
+        self.notes = []
 
     # TODO: Set Color Function
     # drives 1 inch squares to set the light value of black, white, red(C), orange(D), yellow(E), green(F), blue(G), purple(A), pink(B)
     def set_color(self):
         robot = robo.Snatch3r()
-        note_list =  ["C", "D", "E", "F", "G", "A", "B"]
-        frequency_list = [261.6, 293.7, 329.6, 349.2, 391.9, 440.0, 493.9]
-        global notes
-        notes = []
-        global bw
-        bw = {}
         for k in range(9):
             rgb = [ev3.ColorSensor.red, ev3.ColorSensor.green, ev3.ColorSensor.blue]
             if k == 0:
-                bw["black"] = ev3.ColorSensor.reflected_light_intensity
+                self.bw["black"] = ev3.ColorSensor.reflected_light_intensity
             elif k == 1:
-                bw["white"] = ev3.ColorSensor.reflected_light_intensity
+                self.bw["white"] = ev3.ColorSensor.reflected_light_intensity
             else:
-                notes[k] = Notes(note_list[k], frequency_list[k], rgb)
-            robot.drive_inches(1, 300)
+                self.notes[k] = Notes(self.note_list[k], self.frequency_list[k], rgb)
+            robo.Snatch3r().drive_inches(1, 300)
     #notes = [black, white, red(C), orange(D), yellow(E), green(F), blue(G), purple(A), pink(B)]
 
 
@@ -61,14 +64,14 @@ class MyDelegate(object):
         next_note = ""
         started = 0
         while not len(song_frq) == num_keys:
-            if abs(ev3.ColorSensor.reflected_light_intensity - bw["black"]) <= 5:
+            if abs(int(ev3.ColorSensor.reflected_light_intensity) - int(self.bw["black"])) <= 5:
                 if started != 0:
                     song_str += next_note.note + " "
                     song_frq += [next_note.note_freq]
                     self.mqtt_client.send_message("song_display", ["Song: {}".format(song_str)])
             else:
                 for k in range(7):
-                    note = notes[k]
+                    note = self.notes[k]
                     if (abs(note.color.red - ev3.ColorSensor().red) <=5 & abs(note.color.green - ev3.ColorSensor().green) <=5 & abs(note.color.blue - ev3.ColorSensor().blue) <=5):
                         ev3.Sound.tone(note.note_freq)
                         next_note = note
@@ -88,18 +91,12 @@ class MyDelegate(object):
         ev3.Sound.tone(song).wait()
 
 
-# TODO: Create the Notes Class
-class Notes(object):
-
-    def __init__(self, name, frequency, rgb):
-        self.note = name
-        self.color = rgb
-        self.color.red = self.color[0]
-        self.color.blue = self.color[1]
-        self.color.green = self.color[2]
-        self.note_freq = frequency
-
-
+def main():
+    print("Ready")
+    my_delegate = SongMaster()
+    mqtt_client = com.MqttClient(my_delegate)
+    my_delegate.mqtt_client = mqtt_client
+    mqtt_client.connect_to_pc()
 
 
 
