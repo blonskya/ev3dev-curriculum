@@ -5,11 +5,17 @@ from tkinter import ttk
 
 import mqtt_remote_method_calls as com
 
+class Song_String(object):
+
+    def __init__(self, label):
+        self.label = label
+
+    def set_song_string(self, song_from_ev3):
+        self.label["text"] = "Song: " + song_from_ev3
+
+
 
 def main():
-    mqtt_client = com.MqttClient()
-    mqtt_client.connect_to_ev3()
-
     root = tkinter.Tk()
     root.title("Robo Song")
 
@@ -20,15 +26,15 @@ def main():
     line_break_0.grid(row=1, column=1, columnspan=3)
     line_break_1 = ttk.Label(main_frame, text="- - - - - - - - - - - -")
     line_break_1.grid(row=5, column=1, columnspan=3)
+    line_break_2 = ttk.Label(main_frame, text="- - - - - - - - - - - -")
+    line_break_2.grid(row=10, column=1, columnspan=3)
 
-    song_freqs = []
 
     # Calls the set colors function
     # TODO: Tkinter Part One
     set_colors_button = ttk.Button(main_frame, text="Set Color Values")
     set_colors_button.grid(row=0, column=1, columnspan=3)
     set_colors_button['command'] = lambda: set_colors(mqtt_client)
-    root.bind('<Up>', lambda event: set_colors(mqtt_client))
 
     # Calls the Record Song function
     # TODO: Tkinter Part Two
@@ -49,7 +55,7 @@ def main():
     record_song_button = ttk.Button(main_frame, text="Record!")
     record_song_button.grid(row=4, column=1, columnspan=3)
     record_song_button['command'] = lambda: record_song(mqtt_client, int(record_speed_entry.get()), int(record_keys_entry.get()))
-    root.bind('<Right>', lambda event: record_song(mqtt_client, int(record_speed_entry.get()), int(record_keys_entry.get())))
+    root.bind('<Return>', lambda event: record_song(mqtt_client, int(record_speed_entry.get()), int(record_keys_entry.get())))
 
     # Calls the Playback function
     # TODO: Tkinter Part Three
@@ -67,13 +73,21 @@ def main():
 
     play_song_button = ttk.Button(main_frame, text="Play Back")
     play_song_button.grid(row=8, column=1, columnspan=3)
-    play_song_button['command'] = lambda: play_song(mqtt_client, song_freqs, int(note_length_entry.get()), int(note_delay_entry.get()))
-    root.bind('<Right>', lambda event: play_song(mqtt_client, song_freqs, int(note_length_entry.get()), int(note_delay_entry.get())))
+    play_song_button['command'] = lambda: play_song(mqtt_client, int(note_length_entry.get()), int(note_delay_entry.get()))
 
     # Displays the song
     # TODO: Display song on Tkinter
-    song_display = ttk.Label(main_frame, text="Song: _________________")
+    song_display = ttk.Label(main_frame, text="Song: ")
     song_display.grid(row=9, column=0, columnspan=5)
+
+    quit_button = ttk.Button(main_frame, text="Quit")
+    quit_button.grid(row=11, column=1, columnspan=3)
+    quit_button['command'] = lambda: quit_program(mqtt_client)
+
+    my_delegate = Song_String(song_display)
+    mqtt_client = com.MqttClient(my_delegate)
+    mqtt_client.connect_to_ev3()
+
 
     root.mainloop()
 
@@ -94,5 +108,10 @@ def play_song(mqtt_client, note_length, delay_length):
     # calls the play song function in ev3
     print("play_song")
     mqtt_client.send_message("play_song", [note_length, delay_length])
+
+def quit_program(mqtt_client):
+    mqtt_client.send_message("exit")
+    mqtt_client.close()
+    exit()
 
 main()
